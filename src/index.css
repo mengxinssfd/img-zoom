@@ -1,0 +1,25 @@
+.img-zoom-wrapper {
+  z-index: 10000;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.img-zoom-wrapper .img-zoom-target {
+  z-index: 1000000;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  display: block;
+  width: auto;
+  height: auto;
+  width: 100px;
+  height: 100px;
+  transform: translate(-50%, -50%);
+  background-color: red;
+  border: none;
+  outline: none;
+}
+/*# sourceMappingURL=index.css.map */
