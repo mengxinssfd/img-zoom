@@ -1,4 +1,2 @@
-import  utils from "@mxssfd/ts-utils"
-utils.debounce(function () {
-
-},10)
+import util from "./utils/index"
+util.name
