@@ -3,8 +3,8 @@
     // Target latest version of ECMAScript.
     "target": "esnext",
     // Search under node_modules for non-relative imports.
-    "moduleResolution": "node"
-    //    "module": "commonjs",
+    "moduleResolution": "node",
+    "module": "esnext"
     //    "allowSyntheticDefaultImports": true, // "allowSyntheticDefaultImports": true +  "allowJs": true, 或 "moduleResolution": "node",才不会报错
     // Process & infer types from .js files.
     //    "allowJs": true,

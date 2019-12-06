@@ -8,7 +8,7 @@ const isDev = process.env.NODE_ENV === "development";
 const isPublish = process.env.NODE_ENV === "publish";
 const config = {
     mode: "development",
-    devtool: isDev ? "cheap-module-source-map" : "",
+    // devtool: isDev ? "cheap-module-source-map" : "",
     entry: isPublish ? {
         index: "./src/index.ts",
     } : {
@@ -18,7 +18,7 @@ const config = {
     },
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: isPublish ? "[name].js" : "[name].[hash:4].js"
+        filename: isPublish ? "[name].js" : "[name].[hash:4].js",
     },
     module: {
         rules: [
@@ -26,33 +26,33 @@ const config = {
                 test: /\.less$/,
                 use: [
                     {
-                        loader: "style-loader"
+                        loader: "style-loader",
                     },
                     {
-                        loader: "css-loader"
+                        loader: "css-loader",
                     },
                     {
-                        loader: "less-loader"
-                    }
-                ]
+                        loader: "less-loader",
+                    },
+                ],
             },
             {
                 test: /\.tsx?$/,
                 use: ["babel-loader", "ts-loader"],
-                exclude: [path.resolve(__dirname, "node_modules")]
+                exclude: [path.resolve(__dirname, "node_modules")],
             },
             {
                 test: /\.html$/,
                 use: [
                     {
-                        loader: "html-loader"
-                    }
-                ]
-            }
+                        loader: "html-loader",
+                    },
+                ],
+            },
         ],
     },
     resolve: {
-        extensions: [".ts", ".tsx", ".js"]
+        extensions: [".ts", ".tsx", ".js"],
     },
     plugins: [
         /* new copy([

@@ -1,4 +1,4 @@
 import {ImgZoom} from "../index";
-import "../index.less"
+import "../index.less";
 
-new ImgZoom({el: ""});
+new ImgZoom();
