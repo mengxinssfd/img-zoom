@@ -3,7 +3,7 @@
 
 ### Installation(安装)
 `npm install @mxssfd/img-zoom`
-### 使用方法
+### Usage(使用方法)
 ```javascript
 import ImgZoom form "@mxssfd/img-zoom";
 new ImgZoom(options)
