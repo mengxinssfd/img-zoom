@@ -1,4 +1,4 @@
-## img点击图片显示大图可缩放插件
+# 点击img图片 缩放显示大图插件
    兼容ie9及以上
 
 ### Installation(安装)
@@ -15,7 +15,7 @@ new ImgZoom(options)
     new ImgZoom(options)
 </script>
 ```
-### Options and Defaults(参数与默认参数)
+## Options and Defaults(参数与默认参数)
 ```typescript
 interface scaleOption {
     max?: number,  // 最大缩放倍数
