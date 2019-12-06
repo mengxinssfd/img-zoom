@@ -1,9 +1,9 @@
 # 点击img图片 缩放显示大图插件
    兼容ie9及以上
 
-### Installation(安装)
+## Installation(安装)
 `npm install @mxssfd/img-zoom`
-### Usage(使用方法)
+## Usage(使用方法)
 ```javascript
 import ImgZoom form "@mxssfd/img-zoom";
 new ImgZoom(options)
