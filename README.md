@@ -1,9 +1,9 @@
-##img点击图片显示大图可缩放插件
+## img点击图片显示大图可缩放插件
    兼容ie9及以上
-###使用方法
-```
-npm install @mxssfd/img-zoom
-```
+
+### Installation(安装)
+`npm install @mxssfd/img-zoom`
+### 使用方法
 ```javascript
 import ImgZoom form "@mxssfd/img-zoom";
 new ImgZoom(options)
@@ -15,7 +15,7 @@ new ImgZoom(options)
     new ImgZoom(options)
 </script>
 ```
-### options参数
+### Options and Defaults(参数与默认参数)
 ```typescript
 interface scaleOption {
     max?: number,  // 最大缩放倍数
