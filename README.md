@@ -1,2 +1,43 @@
-#img点击图片显示大图可缩放插件
-
+##img点击图片显示大图可缩放插件
+   兼容ie9及以上
+###使用方法
+```
+npm install @mxssfd/img-zoom
+```
+```javascript
+import ImgZoom form "@mxssfd/img-zoom";
+new ImgZoom(options)
+```
+或者
+```html
+<script src="lib-umd/index.js"></script>
+<script>
+    new ImgZoom(options)
+</script>
+```
+### options参数
+```typescript
+interface scaleOption {
+    max?: number,  // 最大缩放倍数
+    min?: number, // 最小缩放倍数
+    step?: number, // 滚轮滚动一次的缩放倍数
+    default?: number, // 点开图片时显示的缩放倍数
+}
+// 默认scale
+const defaultScale: scaleOption = {
+    max: 10,
+    min: 0.1,
+    step: 0.1,
+    default: 1,
+};
+interface options {
+    triggerImgClass?: string, // 触发显示大图的img的class
+    isClickViewImgClose?: boolean  // 是否点击图片时关闭大图
+    scale?: scaleOption
+}
+// 默认options
+const defaultOptions: options = {
+    triggerImgClass: "img-zoom",
+    isClickViewImgClose: false,
+};
+```

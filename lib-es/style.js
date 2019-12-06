@@ -1,3 +1,4 @@
+export const style = `
 .img-zoom-wrapper {
   z-index: 10000;
   position: fixed;
@@ -18,12 +19,8 @@
   display: block;
   width: auto;
   height: auto;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
   user-select: none;
   border: none;
   outline: none;
 }
+`.replace(/[\n\r]/g, "");
