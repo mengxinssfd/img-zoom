@@ -74,7 +74,7 @@ export default class ImgZoom {
         utils.eventProxy(
             null,
             "click",
-            "img." + this.options.triggerImgClass,
+            "img" + (this.options.triggerImgClass ? "." : "") + this.options.triggerImgClass,
             (e) => {
                 this.scale = this.options.scale!.default as number;
                 this.zoomImg.src = (e.target as HTMLImageElement).src;

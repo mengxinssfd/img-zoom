@@ -1,6 +1,6 @@
 {
   "name": "@mxssfd/img-zoom",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "typescript写的图片缩放插件",
   "main": "./lib-umd/index.js",
   "module": "./lib-es/index.js",
