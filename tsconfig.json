@@ -32,7 +32,9 @@
       ]
     }
   },
-  // "include": ["src/**/*", "src/global.d.ts"],
+  "include": [
+    "node_modules/@mxssfd/ts-utils/lib-es"
+  ],
   "exclude": [
     "tslib",
     "lib*",

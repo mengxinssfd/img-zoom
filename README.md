@@ -5,14 +5,16 @@
 `npm install @mxssfd/img-zoom`
 ## Usage(使用方法)
 ```javascript
+// 使用该方式需babel编译后才支持ie 或者 import ImgZoom form "@mxssfd/img-zoom/lib-umd"
+// 如果项目已使用babel建议使用此方法
 import ImgZoom form "@mxssfd/img-zoom";
-new ImgZoom(options)
+new ImgZoom(options);
 ```
 或者
 ```html
 <script src="lib-umd/index.js"></script>
 <script>
-    new ImgZoom(options)
+    new ImgZoom(options);
 </script>
 ```
 ## Options and Defaults(参数与默认参数)

@@ -79,17 +79,18 @@ export default class ImgZoom {
             this.resetViewScaleAndPosition();
             this.getViewPositionFromMatrix();
         };
+        const target = "img" + (this.options.triggerImgClass ? "." : "") + this.options.triggerImgClass;
         // 普通图片点击
         utils.eventProxy(
             null,
             "click",
-            "img." + this.options.triggerImgClass,
+            target,
             handler(),
         );
         utils.eventProxy(
             null,
             "touchend",
-            "img." + this.options.triggerImgClass,
+            target,
             handler(true),
         );
 
