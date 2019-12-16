@@ -147,7 +147,8 @@ export default class ImgZoom {
         trValList[0] = trValList[3] = scale;
         trValList[4] = this.left;
         trValList[5] = this.top;
-        this.zoomImg.style[transform] = `${addZ ? "translateZ(0) " : ""}matrix(${trValList.join(", ")})`;
+        // ie9加了translateZ会隐藏图片
+        this.zoomImg.style[transform] = `${addZ && this.isSupportTouch() ? "translateZ(0) " : ""}matrix(${trValList.join(", ")})`;
     }
 
     private initView() {
