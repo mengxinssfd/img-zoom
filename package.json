@@ -1,6 +1,6 @@
 {
   "name": "@mxssfd/img-zoom",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "typescript写的图片缩放插件",
   "main": "./lib-umd/index.js",
   "module": "./lib-es/index.js",
@@ -20,7 +20,7 @@
     "lib:es": "tsc --build tsconfig.es.json",
     "test": "echo \"Error: no test specified\" && exit 1",
     "pub": "npm publish --access=public",
-    "dev": "set NODE_ENV=development&webpack-dev-server --config webpack.dev.config.js"
+    "dev": "set NODE_ENV=development&webpack-dev-server --config webpack.dev.config.js --host 0.0.0.0"
   },
   "repository": {
     "type": "git",
@@ -32,12 +32,14 @@
     "url": "https://github.com/mengxinssfd/tsMind/issues"
   },
   "homepage": "https://github.com/mengxinssfd/tsMind#readme",
+  "dependencies": {
+    "@mxssfd/ts-utils": "^1.1.7"
+  },
   "devDependencies": {
     "@babel/core": "^7.6.4",
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.6.3",
     "@babel/runtime": "^7.6.3",
-    "@mxssfd/ts-utils": "^1.1.4",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.0.4",

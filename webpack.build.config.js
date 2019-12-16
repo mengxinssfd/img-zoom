@@ -5,7 +5,7 @@ const resolve = dir => require('path').join(__dirname, dir);
 const config = {
     mode: "production",
     entry: {
-        index: "./src/index.ts",
+        index: ["./node_modules/@mxssfd/ts-utils/lib-es/index.js", "./src/index.ts"],
     },
     output: {
         path: path.resolve(__dirname, "lib-umd"),
@@ -28,6 +28,7 @@ const config = {
                         },
                     },
                 ],
+                // include: [path.resolve(__dirname, "@mxssfd/ts-utils/lib-es/*.js")],
                 exclude: [path.resolve(__dirname, "node_modules")],
             },
         ],
