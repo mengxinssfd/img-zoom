@@ -5,7 +5,6 @@
   "main": "./lib-umd/index.js",
   "module": "./lib-es/index.js",
   "jsnext:main": "./lib-es/index.js",
-  "browser": "./lib-umd/index.js",
   "typings": "./types/index.d.ts",
   "files": [
     "src",

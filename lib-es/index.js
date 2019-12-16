@@ -44,15 +44,19 @@ export default class ImgZoom {
         this.addBodyEventListener();
     }
     addBodyEventListener() {
-        // 普通图片点击
-        utils.eventProxy(null, "click", "img." + this.options.triggerImgClass, (e) => {
+        const handler = (isTouch = false) => (e) => {
+            if (isTouch && this.isSupportTouch())
+                return;
             this.scale = this.options.scale.default;
             this.zoomImg.src = e.target.src;
             utils.removeClass(this.wrapper, "hide");
             // this.getViewPosition();
             this.resetViewScaleAndPosition();
             this.getViewPositionFromMatrix();
-        });
+        };
+        // 普通图片点击
+        utils.eventProxy(null, "click", "img." + this.options.triggerImgClass, handler());
+        utils.eventProxy(null, "touchend", "img." + this.options.triggerImgClass, handler(true));
         // 只有window可以添加resize事件
         const resizeHandler = utils.debounce(() => {
             Log("resize");
@@ -76,6 +80,9 @@ export default class ImgZoom {
         this.left = (screenWidth - width) / 2;
         this.top = (screenHeight - height) / 2;
     }
+    isSupportTouch() {
+        return "ontouchstart" in window;
+    }
     // 获取transform matrix里的值
     getZoomImgStyleMatrixVal() {
         // getComputedStyle 在ie6~8下不兼容 在ie6~8下可以使用currentStyle来获取所有经过浏览器计算过的样式
@@ -89,15 +96,15 @@ export default class ImgZoom {
         this.left = Number(trValList[4]) || 0;
         this.top = Number(trValList[5]) || 0;
     }
-    setViewScaleAndPosition() {
+    setViewScaleAndPosition(addZ = false) {
         const scale = this.scale;
         const trValList = this.getZoomImgStyleMatrixVal();
         // const trValList: Array<string | number> = "0,0,0,0,0,0".split(",");
-        Log("wheel", trValList);
+        // Log("setViewScaleAndPosition", trValList);
         trValList[0] = trValList[3] = scale;
         trValList[4] = this.left;
         trValList[5] = this.top;
-        this.zoomImg.style[transform] = `matrix(${trValList.join(", ")})`;
+        this.zoomImg.style[transform] = `${addZ ? "translateZ(0) " : ""}matrix(${trValList.join(", ")})`;
     }
     initView() {
         const styleEl = document.createElement("style");
@@ -118,12 +125,21 @@ export default class ImgZoom {
     initViewEventListener() {
         const wrapper = this.wrapper;
         const zoomImg = this.zoomImg;
-        const startXY = { x: 0, y: 0 };
-        const lastXY = { x: 0, y: 0 };
-        wrapper.addEventListener("mouseup", () => {
+        // const startXY = {x: 0, y: 0};
+        // const lastXY = {x: 0, y: 0};
+        let upHandler = (isTouch = false) => (e) => {
+            if (isTouch && this.isSupportTouch())
+                return;
             Log("wrapper click");
             utils.addClass(this.wrapper, "hide");
-        });
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        };
+        // 关闭大图
+        wrapper.addEventListener("mouseup", upHandler());
+        wrapper.addEventListener("touchend", upHandler(true));
+        wrapper.addEventListener("touchcancel", upHandler(true));
         wrapper.addEventListener("wheel", (e) => {
             e = e || window.event;
             const scaleOpt = this.options.scale;
@@ -142,38 +158,27 @@ export default class ImgZoom {
             e.preventDefault();
             return false;
         });
-        const mouseMoveHandler = (e) => {
-            e = e || window.event;
-            const { screenX: x, screenY: y } = e;
-            const moveX = ~~(x - lastXY.x);
-            const moveY = ~~(y - lastXY.y);
-            this.left += moveX;
-            this.top += moveY;
-            lastXY.x = x;
-            lastXY.y = y;
-            Log("move", moveX, moveY, this.left, this.top);
-            this.setViewScaleAndPosition();
-        };
-        const mouseUpHandler = (e) => {
-            e = e || window.event;
-            document.documentElement.removeEventListener("mousemove", mouseMoveHandler);
-            document.documentElement.removeEventListener("mouseup", mouseUpHandler, true);
-            // 设置点击关闭并且鼠标未拖动 让事件通过=>关闭大图
-            if (this.options.isClickViewImgClose && (e.screenX === startXY.x || e.screenY === startXY.y))
-                return;
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        };
-        zoomImg.addEventListener("mousedown", (e) => {
-            e = e || window.event;
-            Log(e);
-            startXY.x = e.screenX;
-            startXY.y = e.screenY;
-            lastXY.x = e.screenX;
-            lastXY.y = e.screenY;
-            document.documentElement.addEventListener("mousemove", mouseMoveHandler);
-            document.documentElement.addEventListener("mouseup", mouseUpHandler, true);
+        utils.addDragEventListener({
+            el: zoomImg,
+            onMove: (e, move, last, up) => {
+                const { x, y } = move;
+                const moveX = ~~(x - last.x);
+                const moveY = ~~(y - last.y);
+                this.left += moveX;
+                this.top += moveY;
+                // Log("move", moveX, moveY, this.left, this.top);
+                this.setViewScaleAndPosition(true);
+            },
+            onUp: (e, currentXY, down) => {
+                this.setViewScaleAndPosition();
+                if (this.options.isClickViewImgClose && (currentXY.x === down.x || currentXY.y === down.y))
+                    return;
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            },
+            onDown() {
+            },
         });
     }
 }

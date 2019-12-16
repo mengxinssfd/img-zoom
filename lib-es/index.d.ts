@@ -21,6 +21,7 @@ export default class ImgZoom {
     private addBodyEventListener;
     private resetViewScaleAndPosition;
     private getViewPosition;
+    private isSupportTouch;
     private getZoomImgStyleMatrixVal;
     private getViewPositionFromMatrix;
     private setViewScaleAndPosition;
