@@ -2,9 +2,16 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "esnext",
-    "outDir": "lib-es",
     "target": "esnext",
-    "declaration": true,
-    "declarationDir": "types"
-  }
+    "declaration": false
+  },
+  "include": [
+    "node_modules/@mxssfd/ts-utils/lib-es"
+  ],
+  "exclude": [
+    "lib*",
+    "test.ts",
+    "src/example/*",
+    "*.config.js"
+  ]
 }

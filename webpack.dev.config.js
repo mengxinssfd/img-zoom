@@ -9,9 +9,7 @@ const isPublish = process.env.NODE_ENV === "publish";
 const config = {
     mode: "development",
     // devtool: isDev ? "cheap-module-source-map" : "",
-    entry: isPublish ? {
-        index: "./src/index.ts",
-    } : {
+    entry: {
         example:
         // "./node_modules/babel-polyfill/dist/polyfill.js",
             "./src/example/main.ts",

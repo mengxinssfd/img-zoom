@@ -2,7 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "esnext",
+    "target": "esnext",
     "outDir": "lib-es",
-    "target": "esnext"
+    "declaration": true,
+    "declarationDir": "types"
   }
 }

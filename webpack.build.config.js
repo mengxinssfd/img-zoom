@@ -1,7 +1,7 @@
 const path = require("path");
 // const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const resolve = dir => require('path').join(__dirname, dir);
-
+const UglifyPlugin = require("uglifyjs-webpack-plugin");
 const config = {
     mode: "production",
     entry: {
@@ -52,6 +52,10 @@ const config = {
         // plugins: [new TsconfigPathsPlugin({configFile: "./tsconfig.webpack.json"})],
     },
     plugins: [
+        new UglifyPlugin({
+            test: /\.[jt]s/i,
+            exclude: /node_modules\/(?!@mxssfd)/,
+        }),
         // package.js有了clean命令
         /*new CleanWebpackPlugin({
            cleanOnceBeforeBuildPatterns: [
