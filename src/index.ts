@@ -56,15 +56,26 @@ export default class ImgZoom {
         this.initView();
         this.addBodyEventListener();
     }
+    public setImg(src: string) {
+        this.scale = this.options.scale!.default as number;
+        this.zoomImg.src = src;
+        utils.removeClass(this.wrapper, "hide");
+        // this.getViewPosition();
+        this.resetViewScaleAndPosition();
+        this.getViewPositionFromMatrix();
+    }
     private addBodyEventListener() {
         const handler = (isTouch = false) => (e) => {
             if (isTouch && this.isSupportTouch()) return;
-            this.scale = this.options.scale!.default as number;
-            this.zoomImg.src = (e.target as HTMLImageElement).src;
-            utils.removeClass(this.wrapper, "hide");
-            // this.getViewPosition();
-            this.resetViewScaleAndPosition();
-            this.getViewPositionFromMatrix();
+            const target = e.target;
+            // TODO data-zoom-src通过配置设置
+            let src = target.getAttribute("data-zoom-src");
+            // TODO 判断是否img应使用新的utilTs判断
+            if (!src && target.nodeName === "IMG") {
+                src = (e.target as HTMLImageElement).src;
+            }
+            if (!src) return;
+            this.setImg(src);
         };
         const target = "img" + (this.options.triggerImgClass ? "." : "") + this.options.triggerImgClass;
         // 普通图片点击
@@ -111,7 +122,7 @@ export default class ImgZoom {
         // getComputedStyle 在ie6~8下不兼容 在ie6~8下可以使用currentStyle来获取所有经过浏览器计算过的样式
         const styleObject = getComputedStyle(this.zoomImg);
         const trVal: string = styleObject[transform];
-        return (/matrix\(([\d\\.\,\- ]+)\)/.test(trVal) ? RegExp.$1 : "0,0,0,0,0,0").split(/, ?/);
+        return (/matrix\(([\d\\.,\- ]+)\)/.test(trVal) ? RegExp.$1 : "0,0,0,0,0,0").split(/, ?/);
     }
     private getViewPositionFromMatrix() {
         const trValList = this.getZoomImgStyleMatrixVal();
