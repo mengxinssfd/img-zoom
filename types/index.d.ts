@@ -18,6 +18,7 @@ export default class ImgZoom {
     options: options;
     constructor(options?: options);
     private init;
+    setImg(src: string): void;
     private addBodyEventListener;
     private resetViewScaleAndPosition;
     private getViewPosition;

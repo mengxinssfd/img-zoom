@@ -25,6 +25,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "experimentalDecorators": true,
+    "strict": true,
     // "allowSyntheticDefaultImports": true,
     "paths": {
       "*": [

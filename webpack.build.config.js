@@ -1,6 +1,6 @@
 const path = require("path");
 // const {CleanWebpackPlugin} = require("clean-webpack-plugin");
-const resolve = dir => require('path').join(__dirname, dir);
+const resolve = dir => require("path").join(__dirname, dir);
 const UglifyPlugin = require("uglifyjs-webpack-plugin");
 const config = {
     mode: "production",
@@ -10,10 +10,10 @@ const config = {
     output: {
         path: path.resolve(__dirname, "lib-umd"),
         filename: "[name].js",
-        library: 'ImgZoom', // 指定类库名,主要用于直接引用的方式(比如使用script 标签)
+        library: "ImgZoom", // 指定类库名,主要用于直接引用的方式(比如使用script 标签)
         libraryExport: "default", // 对外暴露default属性，就可以直接调用default里的属性
-        globalObject: 'this', // 定义全局变量,兼容node和浏览器运行，避免出现"window is not defined"的情况
-        libraryTarget: 'umd', // 定义打包方式Universal Module Definition,同时支持在CommonJS、AMD和全局变量使用
+        globalObject: "this", // 定义全局变量,兼容node和浏览器运行，避免出现"window is not defined"的情况
+        libraryTarget: "umd", // 定义打包方式Universal Module Definition,同时支持在CommonJS、AMD和全局变量使用
     },
     module: {
 
@@ -29,21 +29,23 @@ const config = {
                         },
                     },
                 ],
+                sideEffects: false,
                 // include: [path.resolve(__dirname, "@mxssfd/ts-utils/lib-es/*.js")],
-                exclude: [path.resolve(__dirname, "node_modules")],
+                // exclude: [path.resolve(__dirname, "node_modules")],
                 // include: /mxssfd/,
             },
             {
-                /*test(filename) {
+                test(filename) {
                     if (/ts-utils/.test(filename)) {
-                        console.log(filename);
-                        return false;
+                        // console.log(filename);
+                        return true;
                     }
-                    return true;
-                },*/
-                test: /ts-utils/,
+                    return false;
+                },
+                // test: /ts-utils\/.*js$/,
                 loader: "babel-loader",
-                exclude: /node_modules\/(?!@mxssfd)/,
+                sideEffects: false,
+                // exclude: /node_modules\/(?!@mxssfd)/,
             },
         ],
     },
@@ -51,10 +53,14 @@ const config = {
         extensions: [".ts", ".tsx", ".js"],
         // plugins: [new TsconfigPathsPlugin({configFile: "./tsconfig.webpack.json"})],
     },
+    optimization: {
+        usedExports: true,
+        minimize: true,
+    },
     plugins: [
         new UglifyPlugin({
             test: /\.[jt]s/i,
-            exclude: /node_modules\/(?!@mxssfd)/,
+            // exclude: /node_modules\/(?!@mxssfd)/,
         }),
         // package.js有了clean命令
         /*new CleanWebpackPlugin({

@@ -1,11 +1,12 @@
 {
   "name": "@mxssfd/img-zoom",
-  "version": "1.0.2",
+  "version": "1.1.2",
   "description": "typescript写的图片缩放插件",
   "main": "./lib-umd/index.js",
   "module": "./lib-es/index.js",
   "jsnext:main": "./lib-es/index.js",
   "typings": "./types/index.d.ts",
+  "sideEffects": false,
   "files": [
     "src",
     "lib-es/*",
@@ -58,6 +59,6 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
-    "@mxssfd/ts-utils": "^1.1.10"
+    "@mxssfd/ts-utils": "^2.2.1"
   }
 }
