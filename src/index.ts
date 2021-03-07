@@ -6,9 +6,11 @@ import {
     prefixStyle,
     removeClass,
     createElement,
+    merge,
 } from "@mxssfd/ts-utils";
 // import utils from "@mxssfd/ts-utils/lib-umd/index-umd";
 import {style} from "./style";
+
 // import * as  utils from "@mxssfd/ts-utils/";
 interface scaleOption {
     max?: number,
@@ -48,8 +50,8 @@ export default class ImgZoom {
     constructor(options?: options) {
         // option chain不支持
         // this.triggerImgClass = options?.triggerImgClass;
-        this.options = Object.assign({}, defaultOptions, options);
-        this.options.scale = Object.assign({}, defaultScale, this.options.scale);
+        this.options = merge(JSON.parse(JSON.stringify(defaultOptions)), options || {});
+        this.options.scale = merge(defaultScale, this.options.scale || {});
         const sc = this.options!.scale;
         const min = sc.min as number;
         const max = sc.max as number;
