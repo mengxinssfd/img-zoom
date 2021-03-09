@@ -1,6 +1,5 @@
-import { eventProxy, addClass, addDragEventListener, prefixStyle, removeClass, createElement, } from "@mxssfd/ts-utils/src/dom";
-import { debounce } from "@mxssfd/ts-utils/src/common";
-// import utils from "@mxssfd/ts-utils/lib-umd/index-umd"; // fixme 打包成库的时候会报错 不打包成库没问题
+import { eventProxy, addClass, debounce, addDragEventListener, prefixStyle, removeClass, createElement, merge, } from "@mxssfd/ts-utils";
+// import utils from "@mxssfd/ts-utils/lib-umd/index-umd";
 import { style } from "./style";
 const transform = prefixStyle("transform");
 const defaultScale = {
@@ -20,8 +19,8 @@ export default class ImgZoom {
     constructor(options) {
         // option chain不支持
         // this.triggerImgClass = options?.triggerImgClass;
-        this.options = Object.assign({}, defaultOptions, options);
-        this.options.scale = Object.assign({}, defaultScale, this.options.scale);
+        this.options = merge(JSON.parse(JSON.stringify(defaultOptions)), options || {});
+        this.options.scale = merge(defaultScale, this.options.scale || {});
         const sc = this.options.scale;
         const min = sc.min;
         const max = sc.max;
