@@ -1,7 +1,8 @@
 {
   "name": "@mxssfd/img-zoom",
   "version": "1.1.2",
-  "description": "typescript写的图片缩放插件",
+  "author": "dyh",
+  "description": "html图片缩放ts/js库",
   "main": "./lib-umd/index.js",
   "module": "./lib-es/index.js",
   "jsnext:main": "./lib-es/index.js",
@@ -25,12 +26,11 @@
     "type": "git",
     "url": "git+https://github.com/mengxinssfd/img-zoom.git"
   },
-  "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mengxinssfd/tsMind/issues"
+    "url": "https://github.com/mengxinssfd/img-zoom/issues"
   },
-  "homepage": "https://github.com/mengxinssfd/tsMind#readme",
+  "homepage": "https://github.com/mengxinssfd/img-zoom#readme",
   "devDependencies": {
     "@babel/core": "^7.6.4",
     "@babel/plugin-transform-runtime": "^7.6.2",
@@ -58,6 +58,6 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
-    "@mxssfd/ts-utils": "^2.3.5"
+    "@mxssfd/ts-utils": "^2.3.6"
   }
 }

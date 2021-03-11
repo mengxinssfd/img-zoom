@@ -2,6 +2,9 @@ const path = require("path");
 // const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const resolve = dir => require("path").join(__dirname, dir);
 const UglifyPlugin = require("uglifyjs-webpack-plugin");
+const webpack = require("webpack");
+const {version, author, homepage} = require('./package.json')
+const libraryName = 'ImgZoom'
 const config = {
     mode: "production",
     entry: {
@@ -10,7 +13,7 @@ const config = {
     output: {
         path: path.resolve(__dirname, "lib-umd"),
         filename: "[name].js",
-        library: "ImgZoom", // 指定类库名,主要用于直接引用的方式(比如使用script 标签)
+        library: libraryName, // 指定类库名,主要用于直接引用的方式(比如使用script 标签)
         libraryExport: "default", // 对外暴露default属性，就可以直接调用default里的属性
         globalObject: "this", // 定义全局变量,兼容node和浏览器运行，避免出现"window is not defined"的情况
         libraryTarget: "umd", // 定义打包方式Universal Module Definition,同时支持在CommonJS、AMD和全局变量使用
@@ -58,9 +61,22 @@ const config = {
         minimize: true,
     },
     plugins: [
-        new UglifyPlugin({
+       /* new UglifyPlugin({
             test: /\.[jt]s/i,
             // exclude: /node_modules\/(?!@mxssfd)/,
+        }),*/
+        new webpack.BannerPlugin({
+            entryOnly: true, // 是否仅在入口包中输出 banner 信息
+            banner: () => {
+                const date = new Date();
+                return `${libraryName} v${version}`
+                  + `\n`
+                  + `Author: ${author}`
+                  + `\n`
+                  + `Documentation: ${homepage}`
+                  + `\n`
+                  + `Date: ${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+            }
         }),
         // package.js有了clean命令
         /*new CleanWebpackPlugin({
