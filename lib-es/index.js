@@ -1,4 +1,4 @@
-import { eventProxy, addClass, debounce, addDragEventListener, prefixStyle, removeClass, createElement, merge, } from "@mxssfd/ts-utils";
+import { eventProxy, addClass, debounce, addDragEventListener, prefixStyle, removeClass, createElement, assign, isImgElement, supportTouch, } from "@mxssfd/ts-utils";
 // import utils from "@mxssfd/ts-utils/lib-umd/index-umd";
 import { style } from "./style";
 const transform = prefixStyle("transform");
@@ -19,8 +19,8 @@ export default class ImgZoom {
     constructor(options) {
         // option chain不支持
         // this.triggerImgClass = options?.triggerImgClass;
-        this.options = merge(JSON.parse(JSON.stringify(defaultOptions)), options || {});
-        this.options.scale = merge(defaultScale, this.options.scale || {});
+        this.options = assign(JSON.parse(JSON.stringify(defaultOptions)), options || {});
+        this.options.scale = assign(defaultScale, this.options.scale || {});
         const sc = this.options.scale;
         const min = sc.min;
         const max = sc.max;
@@ -54,13 +54,11 @@ export default class ImgZoom {
     }
     addBodyEventListener() {
         const handler = (isTouch = false) => (e) => {
-            if (isTouch && this.isSupportTouch())
-                return;
+            // if (isTouch && !supportTouch()) return;
             const target = e.target;
             // TODO data-zoom-src通过配置设置
             let src = target.getAttribute("data-zoom-src");
-            // TODO 判断是否img应使用新的utilTs判断
-            if (!src && target.nodeName === "IMG") {
+            if (!src && isImgElement(target)) {
                 src = e.target.src;
             }
             if (!src)
@@ -70,7 +68,12 @@ export default class ImgZoom {
         const target = "img" + (this.options.triggerImgClass ? "." : "") + this.options.triggerImgClass;
         // 普通图片点击
         eventProxy(null, "click", target, handler());
-        eventProxy(null, "touchend", target, handler(true));
+        /* eventProxy(
+             null,
+             "touchend",
+             target,
+             handler(true),
+         );*/
         // 只有window可以添加resize事件
         const resizeHandler = debounce(() => {
             Log("resize");
@@ -94,9 +97,6 @@ export default class ImgZoom {
         this.left = (screenWidth - width) / 2;
         this.top = (screenHeight - height) / 2;
     }
-    isSupportTouch() {
-        return "ontouchstart" in window;
-    }
     // 获取transform matrix里的值
     getZoomImgStyleMatrixVal() {
         // getComputedStyle 在ie6~8下不兼容 在ie6~8下可以使用currentStyle来获取所有经过浏览器计算过的样式
@@ -119,7 +119,7 @@ export default class ImgZoom {
         trValList[4] = this.left;
         trValList[5] = this.top;
         // ie9加了translateZ会隐藏图片
-        this.zoomImg.style[transform] = `${addZ && this.isSupportTouch() ? "translateZ(0) " : ""}matrix(${trValList.join(", ")})`;
+        this.zoomImg.style[transform] = `${addZ && supportTouch() ? "translateZ(0) " : ""}matrix(${trValList.join(", ")})`;
     }
     initView() {
         const styleEl = document.createElement("style");
@@ -143,7 +143,7 @@ export default class ImgZoom {
         // const startXY = {x: 0, y: 0};
         // const lastXY = {x: 0, y: 0};
         let upHandler = (isTouch = false) => (e) => {
-            if (isTouch && this.isSupportTouch())
+            if (isTouch && supportTouch())
                 return;
             Log("wrapper click");
             addClass(this.wrapper, "hide");
@@ -193,7 +193,9 @@ export default class ImgZoom {
                 return false;
             },
             onDown() {
-                console.log(arguments);
+                // touchstart事件会优先于mousedown事件，touchmove后不会触发mousedown事件
+                // 所以move和up的事件不会同时触发两次
+                Log(arguments);
             },
         });
     }
