@@ -1,9 +1,16 @@
 import ImgZoom from "../index";
 // import "../index.less";
 
-new ImgZoom({
+const iz = new ImgZoom({
     scale: {
         step: -1,
     },
     triggerEl: [".img-zoom", document.querySelector("button") as HTMLElement],
+});
+
+window.addEventListener("keyup", function (e) {
+    console.log(e);
+    if (e.key === "a") {
+        iz.destroy();
+    }
 });

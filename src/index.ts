@@ -34,7 +34,7 @@ interface Options {
 type RequiredOptions = { scale: Required<ScaleOption> } & Required<Options>
 
 const transform = prefixStyle("transform") as string;
-const DefaultScale: ScaleOption = {
+const defaultScale: ScaleOption = {
     max: 10,
     min: 0.1,
     step: 0.1,
@@ -54,10 +54,11 @@ export default class ImgZoom {
     left!: number;
     top!: number;
     options!: RequiredOptions;
+    needCancelEventList: (() => void)[] = [];
 
     constructor(options?: Options) {
         const opts = assign({}, defaultOptions, options || {}) as RequiredOptions;
-        opts.scale = assign({}, DefaultScale, opts.scale || {});
+        opts.scale = assign({}, defaultScale, opts.scale || {});
         this.options = opts;
         const sc = this.options!.scale;
         const min = sc.min as number;
@@ -101,18 +102,22 @@ export default class ImgZoom {
             this.setImg(src);
         };
         const triggerEl = this.options.triggerEl;
-        let trigger = isArrayLike(triggerEl) ? triggerEl : [triggerEl];
+        const trigger = isArrayLike(triggerEl) ? triggerEl : [triggerEl];
+        const evList = this.needCancelEventList;
         Array.prototype.forEach.call(trigger, (it) => {
             if (isDom(it)) {
                 it.addEventListener("click", handler);
+                evList.push(() => {
+                    it.removeEventListener("click", handler);
+                });
             }
             if (isString(it)) {
-                eventProxy(
+                evList.push(eventProxy(
                     null,
                     "click",
                     it,
                     handler,
-                );
+                ) as (() => void));
             }
         });
 
@@ -130,6 +135,9 @@ export default class ImgZoom {
             this.saveViewPositionFromMatrix();
         }, 100);
         window.addEventListener("resize", resizeHandler);
+        this.needCancelEventList.push(() => {
+            window.removeEventListener("resize", resizeHandler);
+        });
     }
 
     private resetViewScaleAndPosition() {
@@ -257,5 +265,10 @@ export default class ImgZoom {
                 Log(arguments);
             },
         });
+    }
+
+    public destroy() {
+        this.needCancelEventList.forEach(cancel => cancel());
+        this.wrapper.parentNode!.removeChild(this.wrapper);
     }
 }

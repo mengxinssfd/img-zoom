@@ -1,31 +1,39 @@
-interface scaleOption {
+interface ScaleOption {
     max?: number;
     min?: number;
     step?: number;
     default?: number;
 }
-interface options {
-    triggerImgClass?: string;
+interface Options {
+    triggerEl?: string | Array<string | HTMLElement> | NodeListOf<HTMLElement>;
     isClickViewImgClose?: boolean;
-    scale?: scaleOption;
+    scale?: ScaleOption;
+    dataset?: string;
 }
+declare type RequiredOptions = {
+    scale: Required<ScaleOption>;
+} & Required<Options>;
 export default class ImgZoom {
     wrapper: HTMLElement;
     zoomImg: HTMLImageElement;
     scale: number;
     left: number;
     top: number;
-    options: options;
-    constructor(options?: options);
+    options: RequiredOptions;
+    needCancelEventList: (() => void)[];
+    constructor(options?: Options);
     private init;
     setImg(src: string): void;
-    private addBodyEventListener;
+    private initTrigger;
     private resetViewScaleAndPosition;
     private getViewPosition;
     private getZoomImgStyleMatrixVal;
-    private getViewPositionFromMatrix;
+    private saveViewPositionFromMatrix;
     private setViewScaleAndPosition;
     private initView;
-    private initViewEventListener;
+    scaleIncrease(): void;
+    scaleDecrease(): void;
+    private addInitViewEventListener;
+    destroy(): void;
 }
 export {};
