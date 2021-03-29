@@ -9,34 +9,41 @@ import {
     assign,
     isImgElement,
     supportTouch,
+    isArrayLike,
+    isDom,
+    isString,
 } from "@mxssfd/ts-utils";
 // import utils from "@mxssfd/ts-utils/lib-umd/index-umd";
 import {style} from "./style";
 
 // import * as  utils from "@mxssfd/ts-utils/";
-interface scaleOption {
+interface ScaleOption {
     max?: number,
     min?: number,
     step?: number,
     default?: number,
 }
 
-interface options {
-    triggerImgClass?: string, // 触发显示大图的img的class
+interface Options {
+    triggerEl?: string | Array<string | HTMLElement> | NodeListOf<HTMLElement>, // 触发显示大图的img的class
     isClickViewImgClose?: boolean  // 是否点击图片时关闭大图
-    scale?: scaleOption
+    scale?: ScaleOption,
+    dataset?: string, // 非img标签触发事件上必须有dataset保存图片地址
 }
 
+type RequiredOptions = { scale: Required<ScaleOption> } & Required<Options>
+
 const transform = prefixStyle("transform") as string;
-const defaultScale: scaleOption = {
+const DefaultScale: ScaleOption = {
     max: 10,
     min: 0.1,
     step: 0.1,
     default: 1,
 };
-const defaultOptions: options = {
-    triggerImgClass: "img-zoom",
+const defaultOptions: Options = {
+    triggerEl: ".img-zoom",
     isClickViewImgClose: false,
+    dataset: "data-img-zoom",
 };
 const Log: (...args: any[]) => void = process.env.NODE_ENV === "development" ? console.log : () => {
 };
@@ -46,14 +53,12 @@ export default class ImgZoom {
     scale!: number;
     left!: number;
     top!: number;
-    options: options;
+    options!: RequiredOptions;
 
-    // triggerImgClass: string;
-    constructor(options?: options) {
-        // option chain不支持
-        // this.triggerImgClass = options?.triggerImgClass;
-        this.options = assign(JSON.parse(JSON.stringify(defaultOptions)), options || {});
-        this.options.scale = assign(defaultScale, this.options.scale || {});
+    constructor(options?: Options) {
+        const opts = assign({}, defaultOptions, options || {}) as RequiredOptions;
+        opts.scale = assign({}, DefaultScale, opts.scale || {});
+        this.options = opts;
         const sc = this.options!.scale;
         const min = sc.min as number;
         const max = sc.max as number;
@@ -63,14 +68,16 @@ export default class ImgZoom {
         if (def < min) throw new Error("scale.default不能小于scale.min");
         if (def > max) throw new Error("scale.default不能大于scale.max");
         if (min <= 0) throw new Error("scale.min不能小于等于0");
-        if (step <= 0) throw new Error("scale.step不能小于等于0");
+        // 正负反过来，则滚轮放大缩小也反过来
+        // if (step <= 0) throw new Error("scale.step不能小于等于0");
         if (step > max) console.warn("scale.step已大于scale.max");
         this.init();
     }
 
     private init() {
         this.initView();
-        this.addBodyEventListener();
+        this.addInitViewEventListener();
+        this.initTrigger();
     }
 
     public setImg(src: string) {
@@ -79,29 +86,36 @@ export default class ImgZoom {
         removeClass(this.wrapper, "hide");
         // this.getViewPosition();
         this.resetViewScaleAndPosition();
-        this.getViewPositionFromMatrix();
+        this.saveViewPositionFromMatrix();
     }
 
-    private addBodyEventListener() {
-        const handler = (isTouch = false) => (e) => {
+    private initTrigger() {
+        const handler = (e) => {
             // if (isTouch && !supportTouch()) return;
             const target = e.target;
-            // TODO data-zoom-src通过配置设置
-            let src = target.getAttribute("data-zoom-src");
+            let src = target.getAttribute(this.options.dataset);
             if (!src && isImgElement(target)) {
                 src = e.target.src;
             }
             if (!src) return;
             this.setImg(src);
         };
-        const target = "img" + (this.options.triggerImgClass ? "." : "") + this.options.triggerImgClass;
-        // 普通图片点击
-        eventProxy(
-            null,
-            "click",
-            target,
-            handler(),
-        );
+        const triggerEl = this.options.triggerEl;
+        let trigger = isArrayLike(triggerEl) ? triggerEl : [triggerEl];
+        Array.prototype.forEach.call(trigger, (it) => {
+            if (isDom(it)) {
+                it.addEventListener("click", handler);
+            }
+            if (isString(it)) {
+                eventProxy(
+                    null,
+                    "click",
+                    it,
+                    handler,
+                );
+            }
+        });
+
         /* eventProxy(
              null,
              "touchend",
@@ -113,7 +127,7 @@ export default class ImgZoom {
             Log("resize");
             // this.getViewPosition();
             this.resetViewScaleAndPosition();
-            this.getViewPositionFromMatrix();
+            this.saveViewPositionFromMatrix();
         }, 100);
         window.addEventListener("resize", resizeHandler);
     }
@@ -142,7 +156,7 @@ export default class ImgZoom {
         return (/matrix\(([\d\\.,\- ]+)\)/.test(trVal) ? RegExp.$1 : "0,0,0,0,0,0").split(/, ?/);
     }
 
-    private getViewPositionFromMatrix() {
+    private saveViewPositionFromMatrix() {
         const trValList = this.getZoomImgStyleMatrixVal();
         // return {x: trValList[4], y: trValList[5]};
         this.left = Number(trValList[4]) || 0;
@@ -175,10 +189,27 @@ export default class ImgZoom {
         document.body.appendChild(wrapper);
         this.zoomImg = zoomImg;
         this.wrapper = wrapper;
-        this.initViewEventListener();
     }
 
-    private initViewEventListener() {
+    public scaleIncrease() {
+        const scaleOpt = this.options.scale;
+        const max = scaleOpt.max;
+        let scale = this.scale + scaleOpt.step;
+        if (scale > max) scale = max;
+        this.scale = scale;
+        this.setViewScaleAndPosition();
+    }
+
+    public scaleDecrease() {
+        const scaleOpt = this.options.scale;
+        const min = scaleOpt.min;
+        let scale = this.scale - scaleOpt.step;
+        if (scale < min) scale = min;
+        this.scale = scale;
+        this.setViewScaleAndPosition();
+    }
+
+    private addInitViewEventListener() {
         const wrapper = this.wrapper;
         const zoomImg = this.zoomImg;
         // const startXY = {x: 0, y: 0};
@@ -197,16 +228,7 @@ export default class ImgZoom {
         wrapper.addEventListener("touchcancel", upHandler(true));
         wrapper.addEventListener("wheel", (e) => {
             e = e || (window.event as WheelEvent);
-            const scaleOpt = this.options.scale;
-            const optStep = scaleOpt!.step as number;
-            const min = scaleOpt!.min as number;
-            const max = scaleOpt!.max as number;
-            const step = e.deltaY > 0 ? -optStep : optStep;
-            let scale = this.scale + step;
-            if (scale > max) scale = max;
-            if (scale < min) scale = min;
-            this.scale = scale;
-            this.setViewScaleAndPosition();
+            e.deltaY > 0 ? this.scaleDecrease() : this.scaleIncrease();
             e.stopPropagation();
             e.preventDefault();
             return false;

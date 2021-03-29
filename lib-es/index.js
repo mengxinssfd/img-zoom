@@ -65,7 +65,7 @@ export default class ImgZoom {
                 return;
             this.setImg(src);
         };
-        const target = "img" + (this.options.triggerImgClass ? "." : "") + this.options.triggerImgClass;
+        const target = "img" + (this.options.triggerEl ? "." : "") + this.options.triggerEl;
         // 普通图片点击
         eventProxy(null, "click", target, handler());
         /* eventProxy(
