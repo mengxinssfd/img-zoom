@@ -1,7 +1,22 @@
-import { eventProxy, addClass, debounce, addDragEventListener, prefixStyle, removeClass, createElement, assign, isImgElement, supportTouch, isArrayLike, isDom, isString, } from "@mxssfd/ts-utils";
-// import utils from "@mxssfd/ts-utils/lib-umd/index-umd";
+/*import {
+    eventProxy,
+    addClass,
+    debounce,
+    addDragEventListener,
+    prefixStyle,
+    removeClass,
+    createElement,
+    assign,
+    isImgElement,
+    supportTouch,
+    isArrayLike,
+    isDom,
+    isString,
+} from "@mxssfd/ts-utils";*/
+// import utils from "@mxssfd/ts-utils/lib-umd/index";
+import * as utils from "@mxssfd/ts-utils";
 import { style } from "./style";
-const transform = prefixStyle("transform");
+const transform = utils.prefixStyle("transform");
 const defaultScale = {
     max: 10,
     min: 0.1,
@@ -18,8 +33,8 @@ const Log = process.env.NODE_ENV === "development" ? console.log : () => {
 export default class ImgZoom {
     constructor(options) {
         this.needCancelEventList = [];
-        const opts = assign({}, defaultOptions, options || {});
-        opts.scale = assign({}, defaultScale, opts.scale || {});
+        const opts = utils.assign({}, defaultOptions, options || {});
+        opts.scale = utils.assign({}, defaultScale, opts.scale || {});
         this.options = opts;
         const sc = this.options.scale;
         const min = sc.min;
@@ -48,7 +63,7 @@ export default class ImgZoom {
     setImg(src) {
         this.scale = this.options.scale.default;
         this.zoomImg.src = src;
-        removeClass(this.wrapper, "hide");
+        utils.removeClass(this.wrapper, "hide");
         // this.getViewPosition();
         this.resetViewScaleAndPosition();
         this.saveViewPositionFromMatrix();
@@ -58,7 +73,7 @@ export default class ImgZoom {
             // if (isTouch && !supportTouch()) return;
             const target = e.target;
             let src = target.getAttribute(this.options.dataset);
-            if (!src && isImgElement(target)) {
+            if (!src && utils.isImgElement(target)) {
                 src = e.target.src;
             }
             if (!src)
@@ -66,17 +81,17 @@ export default class ImgZoom {
             this.setImg(src);
         };
         const triggerEl = this.options.triggerEl;
-        const trigger = isArrayLike(triggerEl) ? triggerEl : [triggerEl];
+        const trigger = utils.isArrayLike(triggerEl) ? triggerEl : [triggerEl];
         const evList = this.needCancelEventList;
         Array.prototype.forEach.call(trigger, (it) => {
-            if (isDom(it)) {
+            if (utils.isDom(it)) {
                 it.addEventListener("click", handler);
                 evList.push(() => {
                     it.removeEventListener("click", handler);
                 });
             }
-            if (isString(it)) {
-                evList.push(eventProxy(null, "click", it, handler));
+            if (utils.isString(it)) {
+                evList.push(utils.eventProxy(null, "click", it, handler));
             }
         });
         /* eventProxy(
@@ -86,7 +101,7 @@ export default class ImgZoom {
              handler(true),
          );*/
         // 只有window可以添加resize事件
-        const resizeHandler = debounce(() => {
+        const resizeHandler = utils.debounce(() => {
             Log("resize");
             // this.getViewPosition();
             this.resetViewScaleAndPosition();
@@ -133,13 +148,13 @@ export default class ImgZoom {
         trValList[4] = this.left;
         trValList[5] = this.top;
         // ie9加了translateZ会隐藏图片
-        this.zoomImg.style[transform] = `${addZ && supportTouch() ? "translateZ(0) " : ""}matrix(${trValList.join(", ")})`;
+        this.zoomImg.style[transform] = `${addZ && utils.supportTouch() ? "translateZ(0) " : ""}matrix(${trValList.join(", ")})`;
     }
     initView() {
         const styleEl = document.createElement("style");
         styleEl.innerHTML = style;
-        const wrapper = createElement("div", { class: "img-zoom-wrapper hide" });
-        const zoomImg = createElement("img", {
+        const wrapper = utils.createElement("div", { class: "img-zoom-wrapper hide" });
+        const zoomImg = utils.createElement("img", {
             class: "img-zoom-view",
             draggable: "false",
             ondragstart: "return false",
@@ -174,10 +189,10 @@ export default class ImgZoom {
         // const startXY = {x: 0, y: 0};
         // const lastXY = {x: 0, y: 0};
         let upHandler = (isTouch = false) => (e) => {
-            if (isTouch && supportTouch())
+            if (isTouch && utils.supportTouch())
                 return;
             Log("wrapper click");
-            addClass(this.wrapper, "hide");
+            utils.addClass(this.wrapper, "hide");
             e.stopPropagation();
             e.preventDefault();
             return false;
@@ -193,7 +208,7 @@ export default class ImgZoom {
             e.preventDefault();
             return false;
         });
-        addDragEventListener({
+        utils.addDragEventListener({
             el: zoomImg,
             onMove: (e, move, last, up) => {
                 const { x, y } = move;
