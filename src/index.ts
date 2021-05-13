@@ -56,6 +56,7 @@ export default class ImgZoom {
     top!: number;
     options!: RequiredOptions;
     needCancelEventList: (() => void)[] = [];
+    noScrollCanceller?: () => void;
 
     constructor(options?: Options) {
         const opts = utils.assign({}, defaultOptions, options || {}) as RequiredOptions;
@@ -86,6 +87,11 @@ export default class ImgZoom {
         this.scale = this.options.scale!.default as number;
         this.zoomImg.src = src;
         utils.removeClass(this.wrapper, "hide");
+        const cancel = utils.noScroll(window);
+        this.noScrollCanceller = () => {
+            this.noScrollCanceller = undefined;
+            cancel();
+        };
         // this.getViewPosition();
         this.resetViewScaleAndPosition();
         this.saveViewPositionFromMatrix();
@@ -185,37 +191,46 @@ export default class ImgZoom {
     }
 
     private initView() {
-        const styleEl = document.createElement("style");
-        styleEl.innerHTML = style;
-        const wrapper = utils.createElement("div", {class: "img-zoom-wrapper hide"});
-        const zoomImg = utils.createElement("img", {
-            class: "img-zoom-view",
-            draggable: "false",
-            ondragstart: "return false",
+        utils.createElement("style", {
+            props: {
+                innerHTML: style,
+            },
+            parent: document.head,
         });
-        document.head.appendChild(styleEl);
-        wrapper.appendChild(zoomImg);
-        document.body.appendChild(wrapper);
+
+        const zoomImg = utils.createElement("img", {
+            props: {
+                className: "img-zoom-view",
+                draggable: false,
+            },
+            attrs: {
+                ondragstart: "return false",
+            },
+        });
+        this.wrapper = utils.createElement("div", {
+                props: {className: "img-zoom-wrapper hide"},
+                children: [zoomImg],
+            },
+        );
         this.zoomImg = zoomImg;
-        this.wrapper = wrapper;
+    }
+
+    public setScale(scale: number) {
+        const scaleOpt = this.options.scale;
+        this.scale = Math.max(scaleOpt.min, Math.min(scale, scaleOpt.max));
+        this.setViewScaleAndPosition();
     }
 
     public scaleIncrease() {
         const scaleOpt = this.options.scale;
-        const max = scaleOpt.max;
         let scale = this.scale + scaleOpt.step;
-        if (scale > max) scale = max;
-        this.scale = scale;
-        this.setViewScaleAndPosition();
+        this.setScale(scale);
     }
 
     public scaleDecrease() {
         const scaleOpt = this.options.scale;
-        const min = scaleOpt.min;
         let scale = this.scale - scaleOpt.step;
-        if (scale < min) scale = min;
-        this.scale = scale;
-        this.setViewScaleAndPosition();
+        this.setScale(scale);
     }
 
     private addInitViewEventListener() {
@@ -226,6 +241,7 @@ export default class ImgZoom {
         let upHandler = (isTouch = false) => (e: Event) => {
             if (isTouch && utils.supportTouch()) return;
             Log("wrapper click");
+            this.noScrollCanceller && this.noScrollCanceller();
             utils.addClass(this.wrapper, "hide");
             e.stopPropagation();
             e.preventDefault();
@@ -241,6 +257,9 @@ export default class ImgZoom {
             e.stopPropagation();
             e.preventDefault();
             return false;
+        });
+        utils.addScaleEventListener(zoomImg, scale => {
+            this.setScale(this.scale * scale);
         });
         utils.addDragEventListener({
             el: zoomImg,
@@ -260,10 +279,14 @@ export default class ImgZoom {
                 e.preventDefault();
                 return false;
             },
-            onDown() {
+            onDown(e) {
                 // touchstart事件会优先于mousedown事件，touchmove后不会触发mousedown事件
                 // 所以move和up的事件不会同时触发两次
                 Log(arguments);
+                // 触摸屏不拦截事件的话，屏幕会滚动
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
             },
         });
     }

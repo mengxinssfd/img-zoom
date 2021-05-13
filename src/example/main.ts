@@ -4,6 +4,7 @@ import ImgZoom from "../index";
 const iz = new ImgZoom({
     scale: {
         step: -1,
+        min: 0.5,
     },
     triggerEl: [".img-zoom", document.querySelector("button") as HTMLElement],
 });
