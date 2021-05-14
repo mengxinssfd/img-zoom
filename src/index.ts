@@ -48,6 +48,7 @@ const defaultOptions: Options = {
 };
 const Log: (...args: any[]) => void = process.env.NODE_ENV === "development" ? console.log : () => {
 };
+
 export default class ImgZoom {
     wrapper!: HTMLElement;
     zoomImg!: HTMLImageElement;
@@ -258,8 +259,26 @@ export default class ImgZoom {
             e.preventDefault();
             return false;
         });
-        utils.addScaleEventListener(zoomImg, scale => {
-            this.setScale(this.scale * scale);
+
+        const view = utils.createHtmlElement("div", {
+            props: {
+                style: {
+                    position: "fixed",
+                    zIndex: "11111111111111111",
+                    top: "0",
+                    left: "0",
+                    background: "white",
+                    padding: "20px",
+                },
+            },
+        });
+        utils.addScaleEventListener(zoomImg, (d, start) => {
+            /*const width = window.screen.width;
+            const r1 = start / width;
+            const r2 = d / width;
+            this.setScale(this.scale + r2 - r1);*/
+            this.setScale(this.scale / start * d);
+            view.innerText = `${d} / ${start} / ${this.scale}`;
         });
         utils.addDragEventListener({
             el: zoomImg,
