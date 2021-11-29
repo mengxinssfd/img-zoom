@@ -112,7 +112,6 @@ export default class ImgZoom {
         };
         // this.getViewPosition();
         this.resetViewScaleAndPosition();
-        this.saveViewPositionFromMatrix();
     }
 
     private initTrigger() {
@@ -220,6 +219,10 @@ export default class ImgZoom {
             props: {
                 className: "img-zoom-view",
                 draggable: false,
+                onload: () => {
+                    console.log('onload');
+                    this.saveViewPositionFromMatrix();
+                }
             },
             attrs: {
                 ondragstart: "return false",
@@ -303,10 +306,6 @@ export default class ImgZoom {
                 // touchstart事件会优先于mousedown事件，touchmove后不会触发mousedown事件
                 // 所以move和up的事件不会同时触发两次
                 Log(arguments);
-                const left = this.getZoomImgStyleMatrixVal()[4];
-                const top = this.getZoomImgStyleMatrixVal()[5];
-                this.left = Number(left);
-                this.top = Number(top);
                 // 触摸屏不拦截事件的话，屏幕会滚动
                 e.stopPropagation();
                 e.preventDefault();
