@@ -220,7 +220,6 @@ export default class ImgZoom {
                 className: "img-zoom-view",
                 draggable: false,
                 onload: () => {
-                    console.log('onload');
                     this.saveViewPositionFromMatrix();
                 }
             },
