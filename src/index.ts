@@ -76,6 +76,9 @@ export default class ImgZoom {
     private needCancelEventList: (() => void)[] = [];
     private noScrollCanceller?: () => void;
 
+    /**
+     * @param [options = { max: 10,min: 0.1,step: 0.1,default: 1}]
+     */
     constructor(options?: Options) {
         const opts = assign({}, defaultOptions, options || {}) as RequiredOptions;
         opts.scale = assign({}, defaultScale, opts.scale || {});
@@ -219,6 +222,10 @@ export default class ImgZoom {
             props: {
                 className: "img-zoom-view",
                 draggable: false,
+                onclick: () => {
+                    // todo 双击缩放
+                    // todo 支持mac触摸板滑动
+                },
                 onload: () => {
                     this.saveViewPositionFromMatrix();
                 }
