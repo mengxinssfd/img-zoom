@@ -10,17 +10,15 @@ interface Options {
     scale?: ScaleOption;
     dataset?: string;
 }
-declare type RequiredOptions = {
-    scale: Required<ScaleOption>;
-} & Required<Options>;
 export default class ImgZoom {
-    wrapper: HTMLElement;
-    zoomImg: HTMLImageElement;
-    scale: number;
-    left: number;
-    top: number;
-    options: RequiredOptions;
-    needCancelEventList: (() => void)[];
+    private wrapper;
+    private zoomImg;
+    private scale;
+    private left;
+    private top;
+    private options;
+    private needCancelEventList;
+    private noScrollCanceller?;
     constructor(options?: Options);
     private init;
     setImg(src: string): void;
@@ -31,6 +29,7 @@ export default class ImgZoom {
     private saveViewPositionFromMatrix;
     private setViewScaleAndPosition;
     private initView;
+    setScale(scale: number): void;
     scaleIncrease(): void;
     scaleDecrease(): void;
     private addInitViewEventListener;

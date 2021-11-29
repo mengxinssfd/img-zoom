@@ -14,7 +14,24 @@
     isString,
 } from "@mxssfd/ts-utils";*/
 // import utils from "@mxssfd/ts-utils/lib-umd/index";
-import * as utils from "@mxssfd/ts-utils";
+import {
+    addClass,
+    addScaleEventListener,
+    assign,
+    createElement,
+    createHtmlElement,
+    debounce,
+    eventProxy,
+    isArrayLike,
+    isDom,
+    isImgElement,
+    isString,
+    noScroll,
+    onDragEvent,
+    prefixStyle,
+    removeClass,
+    supportTouch
+} from "@mxssfd/ts-utils";
 import {style} from "./style";
 
 // import * as  utils from "@mxssfd/ts-utils/";
@@ -34,7 +51,7 @@ interface Options {
 
 type RequiredOptions = { scale: Required<ScaleOption> } & Required<Options>
 
-const transform = utils.prefixStyle("transform") as string;
+const transform = prefixStyle("transform") as string;
 const defaultScale: ScaleOption = {
     max: 10,
     min: 0.1,
@@ -50,18 +67,18 @@ const Log: (...args: any[]) => void = process.env.NODE_ENV === "development" ? c
 };
 
 export default class ImgZoom {
-    wrapper!: HTMLElement;
-    zoomImg!: HTMLImageElement;
-    scale!: number;
-    left!: number;
-    top!: number;
-    options!: RequiredOptions;
-    needCancelEventList: (() => void)[] = [];
-    noScrollCanceller?: () => void;
+    private wrapper: any;
+    private zoomImg!: HTMLImageElement;
+    private scale!: number;
+    private left!: number;
+    private top!: number;
+    private options!: RequiredOptions;
+    private needCancelEventList: (() => void)[] = [];
+    private noScrollCanceller?: () => void;
 
     constructor(options?: Options) {
-        const opts = utils.assign({}, defaultOptions, options || {}) as RequiredOptions;
-        opts.scale = utils.assign({}, defaultScale, opts.scale || {});
+        const opts = assign({}, defaultOptions, options || {}) as RequiredOptions;
+        opts.scale = assign({}, defaultScale, opts.scale || {});
         this.options = opts;
         const sc = this.options!.scale;
         const min = sc.min as number;
@@ -87,8 +104,8 @@ export default class ImgZoom {
     public setImg(src: string) {
         this.scale = this.options.scale!.default as number;
         this.zoomImg.src = src;
-        utils.removeClass(this.wrapper, "hide");
-        const cancel = utils.noScroll(window);
+        removeClass(this.wrapper, "hide");
+        const cancel = noScroll(window);
         this.noScrollCanceller = () => {
             this.noScrollCanceller = undefined;
             cancel();
@@ -103,24 +120,24 @@ export default class ImgZoom {
             // if (isTouch && !supportTouch()) return;
             const target = e.target;
             let src = target.getAttribute(this.options.dataset);
-            if (!src && utils.isImgElement(target)) {
+            if (!src && isImgElement(target)) {
                 src = e.target.src;
             }
             if (!src) return;
             this.setImg(src);
         };
         const triggerEl = this.options.triggerEl;
-        const trigger = utils.isArrayLike(triggerEl) ? triggerEl : [triggerEl];
+        const trigger = isArrayLike(triggerEl) ? triggerEl : [triggerEl];
         const evList = this.needCancelEventList;
         Array.prototype.forEach.call(trigger, (it) => {
-            if (utils.isDom(it)) {
+            if (isDom(it)) {
                 it.addEventListener("click", handler);
                 evList.push(() => {
                     it.removeEventListener("click", handler);
                 });
             }
-            if (utils.isString(it)) {
-                evList.push(utils.eventProxy(
+            if (isString(it)) {
+                evList.push(eventProxy(
                     null,
                     "click",
                     it,
@@ -136,7 +153,7 @@ export default class ImgZoom {
              handler(true),
          );*/
         // 只有window可以添加resize事件
-        const resizeHandler = utils.debounce(() => {
+        const resizeHandler = debounce(() => {
             Log("resize");
             // this.getViewPosition();
             this.resetViewScaleAndPosition();
@@ -188,18 +205,18 @@ export default class ImgZoom {
         trValList[4] = this.left;
         trValList[5] = this.top;
         // ie9加了translateZ会隐藏图片
-        this.zoomImg.style[transform] = `${addZ && utils.supportTouch() ? "translateZ(0) " : ""}matrix(${trValList.join(", ")})`;
+        this.zoomImg.style[transform] = `${addZ && supportTouch() ? "translateZ(0) " : ""}matrix(${trValList.join(", ")})`;
     }
 
     private initView() {
-        utils.createElement("style", {
+        createElement("style", {
             props: {
                 innerHTML: style,
             },
             parent: document.head,
         });
 
-        const zoomImg = utils.createElement("img", {
+        const zoomImg = createElement("img", {
             props: {
                 className: "img-zoom-view",
                 draggable: false,
@@ -208,9 +225,10 @@ export default class ImgZoom {
                 ondragstart: "return false",
             },
         });
-        this.wrapper = utils.createElement("div", {
+        this.wrapper = createElement("div", {
                 props: {className: "img-zoom-wrapper hide"},
                 children: [zoomImg],
+                parent: document.body
             },
         );
         this.zoomImg = zoomImg;
@@ -240,10 +258,10 @@ export default class ImgZoom {
         // const startXY = {x: 0, y: 0};
         // const lastXY = {x: 0, y: 0};
         let upHandler = (isTouch = false) => (e: Event) => {
-            if (isTouch && utils.supportTouch()) return;
+            if (isTouch && supportTouch()) return;
             Log("wrapper click");
             this.noScrollCanceller && this.noScrollCanceller();
-            utils.addClass(this.wrapper, "hide");
+            addClass(this.wrapper, "hide");
             e.stopPropagation();
             e.preventDefault();
             return false;
@@ -260,7 +278,7 @@ export default class ImgZoom {
             return false;
         });
 
-        const view = utils.createHtmlElement("div", {
+        const view = createHtmlElement("div", {
             props: {
                 style: {
                     position: "fixed",
@@ -272,7 +290,7 @@ export default class ImgZoom {
                 },
             },
         });
-        utils.addScaleEventListener(zoomImg, (d, start) => {
+        addScaleEventListener(zoomImg, (d, start) => {
             /*const width = window.screen.width;
             const r1 = start / width;
             const r2 = d / width;
@@ -280,9 +298,21 @@ export default class ImgZoom {
             this.setScale(this.scale / start * d);
             view.innerText = `${d} / ${start} / ${this.scale}`;
         });
-        utils.addDragEventListener({
-            el: zoomImg,
-            onMove: (e, move, last, up) => {
+        onDragEvent(({onMove, onDown, onUp}) => {
+            onDown((e) => {
+                // touchstart事件会优先于mousedown事件，touchmove后不会触发mousedown事件
+                // 所以move和up的事件不会同时触发两次
+                Log(arguments);
+                const left = this.getZoomImgStyleMatrixVal()[4];
+                const top = this.getZoomImgStyleMatrixVal()[5];
+                this.left = Number(left);
+                this.top = Number(top);
+                // 触摸屏不拦截事件的话，屏幕会滚动
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            });
+            onMove((e, move, last, up) => {
                 const {x, y} = move;
                 const moveX = ~~(x - last.x);
                 const moveY = ~~(y - last.y);
@@ -290,24 +320,15 @@ export default class ImgZoom {
                 this.top += moveY;
                 // Log("move", moveX, moveY, this.left, this.top);
                 this.setViewScaleAndPosition(true);
-            },
-            onUp: (e, currentXY, down) => {
+            });
+            onUp((e, currentXY, down) => {
                 this.setViewScaleAndPosition();
                 if (this.options.isClickViewImgClose && (currentXY.x === down.x || currentXY.y === down.y)) return;
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
-            },
-            onDown(e) {
-                // touchstart事件会优先于mousedown事件，touchmove后不会触发mousedown事件
-                // 所以move和up的事件不会同时触发两次
-                Log(arguments);
-                // 触摸屏不拦截事件的话，屏幕会滚动
-                e.stopPropagation();
-                e.preventDefault();
-                return false;
-            },
-        });
+            });
+        }, {el: zoomImg});
     }
 
     public destroy() {
