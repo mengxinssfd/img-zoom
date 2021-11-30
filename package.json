@@ -1,8 +1,8 @@
 {
   "name": "@mxssfd/img-zoom",
-  "version": "1.2.3",
+  "version": "1.2.6",
   "author": "dyh",
-  "description": "html图片缩放ts/js库",
+  "description": "原生ts/js html图片缩放库",
   "main": "./lib-umd/index.js",
   "module": "./lib-es/index.js",
   "jsnext:main": "./lib-es/index.js",
@@ -22,11 +22,19 @@
     "pub": "npm publish --access=public",
     "dev": "set NODE_ENV=development&webpack-dev-server --config webpack.dev.config.js --host 0.0.0.0"
   },
+  "keywords": [
+    "viewer",
+    "img zoom",
+    "image zoom",
+    "image viewer",
+    "js",
+    "ts"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mengxinssfd/img-zoom.git"
   },
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/mengxinssfd/img-zoom/issues"
   },

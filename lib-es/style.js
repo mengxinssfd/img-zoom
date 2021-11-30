@@ -7,6 +7,7 @@ export const style = `
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.7);
+  cursor: zoom-out;
 }
 .img-zoom-wrapper.hide {
   display: none;
@@ -19,6 +20,12 @@ export const style = `
   display: block;
   width: auto;
   height: auto;
+  cursor: move;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
   user-select: none;
   border: none;
   outline: none;

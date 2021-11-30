@@ -19,6 +19,9 @@ export default class ImgZoom {
     private options;
     private needCancelEventList;
     private noScrollCanceller?;
+    /**
+     * @param [options = { max: 10,min: 0.1,step: 0.1,default: 1}]
+     */
     constructor(options?: Options);
     private init;
     setImg(src: string): void;

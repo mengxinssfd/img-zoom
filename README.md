@@ -2,6 +2,9 @@
 
 兼容ie9及以上
 
+## example
+[example](https://codepen.io/mengxinssfd/pen/jOGOaKN)
+
 ## Installation(安装)
 
 ```shell
@@ -9,7 +12,7 @@ npm install @mxssfd/img-zoom
 ```
 或者cdn方式
 ```html
-<script src="https://cdn.jsdelivr.net/npm/mengxinssfd/img-zoom@main/img/"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mxssfd/img-zoom@1.2.5/lib-umd/index.min.js"></script>
 ```
 
 ## Usage(使用方法)
@@ -17,10 +20,7 @@ npm install @mxssfd/img-zoom
 ```javascript
 // 使用该方式需babel编译后才支持ie 或者 import ImgZoom form "@mxssfd/img-zoom/lib-umd"
 // 如果项目已使用babel建议使用此方法
-import ImgZoom
-
-form
-"@mxssfd/img-zoom";
+import ImgZoom from "@mxssfd/img-zoom";
 new ImgZoom(options);
 ```
 
@@ -53,15 +53,17 @@ const defaultScale: scaleOption = {
 };
 
 interface options {
-    triggerImgClass?: string, // 触发显示大图的img的class
+    triggerEl?: string | Array<string | HTMLElement> | NodeListOf<HTMLElement>, // 触发显示大图的img的class或元素
     isClickViewImgClose?: boolean  // 是否点击图片时关闭大图
-    scale?: scaleOption
+    scale?: ScaleOption, // 缩放
+    dataset?: string, // 非img标签触发事件上必须有dataset保存图片地址
 }
 
 // 默认options
-const defaultOptions: options = {
-    triggerImgClass: "img-zoom",
+const defaultOptions: Options = {
+    triggerEl: ".img-zoom",
     isClickViewImgClose: false,
+    dataset: "data-img-zoom",
 };
 
 // 等于
@@ -72,8 +74,14 @@ new ImgZoom({
         step: 0.1,
         default: 1,
     },
-    triggerImgClass: "img-zoom",
+    triggerEl: "img-zoom",
+    dataset: "data-img-zoom",
     isClickViewImgClose: false,
 });
+```
+也可以手动设置大图
+```js
+const iz = new ImgZoom();
+iz.setImg(imgUrl)
 ```
 
